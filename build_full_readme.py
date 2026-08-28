@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-Generates a complete README.md with the full VR24 syllabus.
-Uses the UNIT_DATA dict and semester maps to build everything dynamically.
+Generates README.md with full VR24 syllabus content AND clickable folder links.
 """
 
 import os
 
 # ---------------------------------------------------------------------
-# UNIT DATA – same as before, covers all theory subjects
+# UNIT_DATA – full unit descriptions per subject (kept intact)
 # ---------------------------------------------------------------------
 UNIT_DATA = {
 
@@ -260,7 +259,7 @@ UNIT_DATA = {
 }
 
 # ---------------------------------------------------------------------
-# Semester -> subject mapping (keys must match UNIT_DATA)
+# Semester -> subject mapping
 # ---------------------------------------------------------------------
 SEMESTER_MAP = {
     "1-1": ["MA", "Chemistry", "PPS", "BEE", "CAEG", "ECS"],
@@ -285,7 +284,7 @@ SEMESTER_NAMES = {
 }
 
 # ---------------------------------------------------------------------
-# Build the README
+# Build README with links
 # ---------------------------------------------------------------------
 def build():
     lines = []
@@ -295,8 +294,22 @@ def build():
     lines.append("> **Regulations:** VR24 (2024–2028)")
     lines.append("> **Program:** B.Tech. in Computer Science & Engineering (CSE)")
     lines.append("")
+    lines.append("---")
+    lines.append("")
 
-    # TOC
+    # ---- Navigation Table (folder links) ----
+    lines.append("## 📂 Repository Navigation")
+    lines.append("")
+    lines.append("| Semester | Folder Link |")
+    lines.append("|----------|-------------|")
+    for sem in SEMESTER_MAP:
+        lines.append(f"| {SEMESTER_NAMES[sem]} | [`/{sem}`](/{sem}) |")
+    lines.append("| DSA (Data Structures & Algorithms) | [`/DSA`](/DSA) |")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+
+    # ---- Table of Contents (syllabus sections) ----
     lines.append("## Table of Contents")
     for sem in SEMESTER_MAP:
         lines.append(f"- [{SEMESTER_NAMES[sem]}](#{sem.lower().replace(' ', '-')})")
@@ -304,35 +317,37 @@ def build():
     lines.append("---")
     lines.append("")
 
-    # Loop semesters
+    # ---- Syllabus content per semester ----
     for sem, subjects in SEMESTER_MAP.items():
         sem_name = SEMESTER_NAMES[sem]
-        lines.append(f"## {sem_name}")
+        anchor = sem.lower().replace(" ", "-")
+        lines.append(f"## {sem_name}  `[{sem}](/{sem})`")
         lines.append("")
-        # build a fake table – we don't have LTPC here, just list subjects
-        lines.append("| S.No | Subject |")
-        lines.append("|------|---------|")
-        for i, sub in enumerate(subjects, 1):
-            lines.append(f"| {i} | {sub} |")
+        lines.append(f"**Folder:** [`/{sem}`](/{sem})")
+        lines.append("")
+        lines.append("| Subject | Folder |")
+        lines.append("|---------|--------|")
+        for sub in subjects:
+            lines.append(f"| {sub} | [`/{sem}/{sub}`](/{sem}/{sub}) |")
         lines.append("")
         lines.append("---")
         lines.append("")
 
-        # detailed entries per subject
+        # subject details
         for sub in subjects:
             data = UNIT_DATA.get(sub)
             if not data:
                 continue
-            lines.append(f"### {sub}")
+            lines.append(f"### {sub}  `[/{sem}/{sub}](/{sem}/{sub})`")
             lines.append("")
-            # we don't have per-subject objectives/outcomes in UNIT_DATA, just units.
-            # let's write a generic header.
-            lines.append("**Course Objectives:** (Refer to the official syllabus document for detailed objectives.)")
+            lines.append("**Course Objectives:** (Refer to the official syllabus document.)")
             lines.append("")
-            lines.append("**Course Outcomes:** (Refer to the official syllabus document for detailed outcomes.)")
+            lines.append("**Course Outcomes:** (Refer to the official syllabus document.)")
             lines.append("")
             for i, unit in enumerate(data, 1):
-                lines.append(f"**Unit-{i}: {unit['title']}**")
+                unit_link = f"/{sem}/{sub}/Unit-{i}"
+                lines.append(f"**Unit-{i}: {unit['title']}**  [`[Unit-{i}]`]({unit_link})")
+                lines.append("")
                 lines.append(f"{unit['desc']}")
                 lines.append("")
             lines.append("**Text Books:** (Refer to the official syllabus document.)")
@@ -341,10 +356,13 @@ def build():
             lines.append("---")
             lines.append("")
 
-    # add DSA note
-    lines.append("### DSA (Data Structures & Algorithms)")
+    # ---- DSA section ----
+    lines.append("## DSA (Data Structures & Algorithms)  `[/DSA](/DSA)`")
     lines.append("")
-    lines.append("Refer to the `DSA` folder for unit-wise content and lab experiments.")
+    lines.append("**Folder:** [`/DSA`](/DSA)")
+    lines.append("")
+    for i in range(1, 6):
+        lines.append(f"- [Unit-{i}](/DSA/Unit-{i})")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -353,8 +371,10 @@ def build():
 
     return "\n".join(lines)
 
+
 if __name__ == "__main__":
     content = build()
     with open("README.md", "w") as f:
         f.write(content)
-    print("README.md generated successfully.")
+    print("README.md generated successfully with folder links.")
+    
