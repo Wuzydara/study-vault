@@ -297,19 +297,19 @@ def build():
     lines.append("---")
     lines.append("")
 
-    # ---- Navigation Table (folder links) ----
-    lines.append("## 📂 Repository Navigation")
+    # Navigation Table
+    lines.append("## Repository Navigation")
     lines.append("")
-    lines.append("| Semester | Folder Link |")
-    lines.append("|----------|-------------|")
+    lines.append("| Semester | Folder |")
+    lines.append("|----------|--------|")
     for sem in SEMESTER_MAP:
-        lines.append(f"| {SEMESTER_NAMES[sem]} | [`/{sem}`](/{sem}) |")
-    lines.append("| DSA (Data Structures & Algorithms) | [`/DSA`](/DSA) |")
+        lines.append(f"| {SEMESTER_NAMES[sem]} | [`{sem}`](/{sem}) |")
+    lines.append("| Data Structures & Algorithms | [`DSA`](/DSA) |")
     lines.append("")
     lines.append("---")
     lines.append("")
 
-    # ---- Table of Contents (syllabus sections) ----
+    # TOC
     lines.append("## Table of Contents")
     for sem in SEMESTER_MAP:
         lines.append(f"- [{SEMESTER_NAMES[sem]}](#{sem.lower().replace(' ', '-')})")
@@ -317,49 +317,50 @@ def build():
     lines.append("---")
     lines.append("")
 
-    # ---- Syllabus content per semester ----
+    # Syllabus per semester
     for sem, subjects in SEMESTER_MAP.items():
         sem_name = SEMESTER_NAMES[sem]
-        anchor = sem.lower().replace(" ", "-")
-        lines.append(f"## {sem_name}  `[{sem}](/{sem})`")
-        lines.append("")
-        lines.append(f"**Folder:** [`/{sem}`](/{sem})")
+        lines.append(f"## {sem_name}  [`{sem}`](/{sem})")
         lines.append("")
         lines.append("| Subject | Folder |")
         lines.append("|---------|--------|")
         for sub in subjects:
-            lines.append(f"| {sub} | [`/{sem}/{sub}`](/{sem}/{sub}) |")
+            lines.append(f"| {sub} | [`{sub}`](/{sem}/{sub}) |")
         lines.append("")
         lines.append("---")
         lines.append("")
 
-        # subject details
+        # Subject details
         for sub in subjects:
             data = UNIT_DATA.get(sub)
             if not data:
                 continue
-            lines.append(f"### {sub}  `[/{sem}/{sub}](/{sem}/{sub})`")
+
+            # Subject header with folder link
+            lines.append(f"### {sub}  [`📁 {sub}`](/{sem}/{sub})")
             lines.append("")
-            lines.append("**Course Objectives:** (Refer to the official syllabus document.)")
+            lines.append("**Course Objectives:** Refer to the official syllabus document.")
             lines.append("")
-            lines.append("**Course Outcomes:** (Refer to the official syllabus document.)")
+            lines.append("**Course Outcomes:** Refer to the official syllabus document.")
             lines.append("")
+
             for i, unit in enumerate(data, 1):
-                unit_link = f"/{sem}/{sub}/Unit-{i}"
-                lines.append(f"**Unit-{i}: {unit['title']}**  [`[Unit-{i}]`]({unit_link})")
+                unit_folder = f"/{sem}/{sub}/Unit-{i}"
+                unit_title = unit['title']
+
+                lines.append(f"#### Unit-{i}: {unit_title}  [`📁 Unit-{i}`]({unit_folder})")
                 lines.append("")
-                lines.append(f"{unit['desc']}")
+                lines.append(unit['desc'])
                 lines.append("")
-            lines.append("**Text Books:** (Refer to the official syllabus document.)")
-            lines.append("**Reference Books:** (Refer to the official syllabus document.)")
+
+            lines.append("**Text Books:** Refer to the official syllabus document.")
+            lines.append("**Reference Books:** Refer to the official syllabus document.")
             lines.append("")
             lines.append("---")
             lines.append("")
 
-    # ---- DSA section ----
-    lines.append("## DSA (Data Structures & Algorithms)  `[/DSA](/DSA)`")
-    lines.append("")
-    lines.append("**Folder:** [`/DSA`](/DSA)")
+    # DSA
+    lines.append("## Data Structures & Algorithms  [`📁 DSA`](/DSA)")
     lines.append("")
     for i in range(1, 6):
         lines.append(f"- [Unit-{i}](/DSA/Unit-{i})")
@@ -377,4 +378,3 @@ if __name__ == "__main__":
     with open("README.md", "w") as f:
         f.write(content)
     print("README.md generated successfully with folder links.")
-    
